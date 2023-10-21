@@ -20,6 +20,7 @@ fn spawn_camera(mut commands: Commands) {
             mouse_sensitivity: 3.0,
             ..default()
         },
+        Name::new("Camera"),
     );
 
     commands.spawn(camera);

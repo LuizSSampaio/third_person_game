@@ -62,7 +62,7 @@ fn player_movement(
 }
 
 fn spawn_player(mut commands: Commands, assets: Res<AssetServer>) {
-    let flashlight = SpotLightBundle::default();
+    let flashlight = (SpotLightBundle::default(), Name::new("FLashlight"));
 
     let player = (
         SceneBundle {
@@ -73,6 +73,7 @@ fn spawn_player(mut commands: Commands, assets: Res<AssetServer>) {
         Speed(2.5),
         Player,
         ThirdPersonCameraTarget,
+        Name::new("Player"),
     );
 
     commands.spawn(player).with_children(|parent| {

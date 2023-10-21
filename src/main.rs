@@ -1,5 +1,6 @@
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_third_person_camera::*;
 use camera::CameraPlugin;
 use floor::FloorPlugin;
@@ -20,6 +21,7 @@ fn main() {
             PlayerPlugin,
             PointLightPlugin,
             ThirdPersonCameraPlugin,
+            WorldInspectorPlugin::new(),
         ))
         .add_plugins((
             LogDiagnosticsPlugin::default(),
