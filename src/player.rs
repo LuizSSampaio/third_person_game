@@ -53,18 +53,20 @@ fn player_movement(
         direction.y = 0.0;
         let movement = direction.normalize_or_zero() * player_speed.0 * time.delta_seconds();
         player_transform.translation += movement;
+
+        // rotate player to face direction he is currently moving
+        if direction.length_squared() > 0.0 {
+            player_transform.look_to(direction, Vec3::Y);
+        }
     }
 }
 
-fn spawn_player(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
+fn spawn_player(mut commands: Commands, assets: Res<AssetServer>) {
+    let flashlight = SpotLightBundle::default();
+
     let player = (
-        PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube::new(1.0))),
-            material: materials.add(Color::BLUE.into()),
+        SceneBundle {
+            scene: assets.load("Player.gltf#Scene0"),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
         },
@@ -73,5 +75,7 @@ fn spawn_player(
         ThirdPersonCameraTarget,
     );
 
-    commands.spawn(player);
+    commands.spawn(player).with_children(|parent| {
+        parent.spawn(flashlight);
+    });
 }
