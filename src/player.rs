@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_third_person_camera::*;
 
 pub struct PlayerPlugin;
 
@@ -67,8 +68,9 @@ fn spawn_player(
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
         },
-        Speed(2.0),
+        Speed(2.5),
         Player,
+        ThirdPersonCameraTarget,
     );
 
     commands.spawn(player);
