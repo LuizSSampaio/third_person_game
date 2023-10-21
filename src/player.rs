@@ -4,7 +4,54 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_player);
+        app.add_systems(Startup, spawn_player)
+            .add_systems(Update, player_movement);
+    }
+}
+
+#[derive(Component)]
+struct Player;
+
+#[derive(Component)]
+struct Speed(f32);
+
+fn player_movement(
+    input: Res<Input<KeyCode>>,
+    time: Res<Time>,
+    mut player_q: Query<(&mut Transform, &Speed), With<Player>>,
+    camera_q: Query<&mut Transform, (With<Camera3d>, Without<Player>)>,
+) {
+    for (mut player_transform, player_speed) in player_q.iter_mut() {
+        let camera = match camera_q.get_single() {
+            Ok(c) => c,
+            Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
+        };
+
+        let mut direction = Vec3::ZERO;
+
+        // forward
+        if input.pressed(KeyCode::W) {
+            direction += camera.forward();
+        }
+
+        // back
+        if input.pressed(KeyCode::S) {
+            direction += camera.back();
+        }
+
+        // left
+        if input.pressed(KeyCode::A) {
+            direction += camera.left();
+        }
+
+        // right
+        if input.pressed(KeyCode::D) {
+            direction += camera.right();
+        }
+
+        direction.y = 0.0;
+        let movement = direction.normalize_or_zero() * player_speed.0 * time.delta_seconds();
+        player_transform.translation += movement;
     }
 }
 
@@ -13,12 +60,16 @@ fn spawn_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let player = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cube::new(1.0))),
-        material: materials.add(Color::BLUE.into()),
-        transform: Transform::from_xyz(0.0, 0.5, 0.0),
-        ..default()
-    };
+    let player = (
+        PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Cube::new(1.0))),
+            material: materials.add(Color::BLUE.into()),
+            transform: Transform::from_xyz(0.0, 0.5, 0.0),
+            ..default()
+        },
+        Speed(2.0),
+        Player,
+    );
 
     commands.spawn(player);
 }

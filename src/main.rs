@@ -1,3 +1,4 @@
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use camera::CameraPlugin;
 use floor::FloorPlugin;
@@ -17,6 +18,10 @@ fn main() {
             FloorPlugin,
             PlayerPlugin,
             PointLightPlugin,
+        ))
+        .add_plugins((
+            LogDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin::default(),
         ))
         .run();
 }
